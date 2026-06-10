@@ -5,7 +5,7 @@ module.exports = {
   apps: [
     {
       name: "servicos-imagens",
-      script: "src/job/send-image.ts", // O arquivo que inicia tudo
+      script: "src/server.ts", // O arquivo que inicia tudo
       interpreter: "node",      // O binário a ser usado
       node_args: [
         "--env-file=.env",
