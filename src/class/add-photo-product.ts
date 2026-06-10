@@ -3,7 +3,7 @@ import { conn2, db_publico } from "../database/mysql-connection.ts"
 import fs from 'node:fs/promises'
 
 
-type resultProduct = {CODIGO:number, OUTRO_COD:string}
+type resultProduct = {CODIGO:number, OUTRO_COD:string, NUM_ORIGINAL:string}
 
 type resultVerifyPhoto = { SEQ:number, FOTO:string,PRODUTO:number}
 
@@ -12,7 +12,7 @@ export class AddPhotoProduct {
 
 
     static async add(PathPhotosErp:string){
-    const SQL = `SELECT CODIGO, OUTRO_COD FROM ${db_publico}.cad_prod WHERE ATIVO = 'S' AND OUTRO_COD <> '' AND OUTRO_COD IS NOT NULL ;`
+    const SQL = `SELECT CODIGO, OUTRO_COD, NUM_ORIGINAL  FROM ${db_publico}.cad_prod WHERE ATIVO = 'S' AND NUM_ORIGINAL <> '' AND NUM_ORIGINAL IS NOT NULL ;`
 
       const [ resultProducts ] = await conn2.query(SQL)  
 
@@ -35,7 +35,7 @@ export class AddPhotoProduct {
      for(const product  of products){
         console.log(`[V] Verificando produto ${product.CODIGO}.`);
           const photosFolder = datafolder.filter(( i )=>{ 
-                     if(i.startsWith(product.OUTRO_COD)   ){
+                     if(i.startsWith(product.NUM_ORIGINAL)   ){
                          return i;
                      };
                  })
@@ -55,7 +55,7 @@ export class AddPhotoProduct {
                             }else{
                                 
                                 const sqlInsert = `INSERT INTO ${db_publico}.fotos_prod set produto = '${product.CODIGO}', 
-                                    seq = '${seq}', descricao = '${product.OUTRO_COD}', FOTO = '${photo}';`;
+                                    seq = '${seq}', descricao = '${product.NUM_ORIGINAL}', FOTO = '${photo}';`;
 
                                 const [ resultInsert ] = await conn2.query(sqlInsert)
 
