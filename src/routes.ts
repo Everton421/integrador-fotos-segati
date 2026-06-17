@@ -36,6 +36,7 @@ router.get('/', async (req, res) => {
   const search = (req.query.search as string) || '';
   const grupo = (req.query.grupo as string) || '';
   const subgrupo = (req.query.subgrupo as string) || '';
+  const foto_filtro = (req.query.foto_filtro as string) || '';
   const page = Math.max(1, parseInt(req.query.page as string) || 1);
   const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 20));
   const offset = (page - 1) * limit;
@@ -57,12 +58,18 @@ router.get('/', async (req, res) => {
       params.push(subgrupo);
     }
 
+    const joinType = foto_filtro === 'com' ? 'INNER JOIN' : 'LEFT JOIN';
+
+    if (foto_filtro === 'sem') {
+      conditions.push('f.PRODUTO IS NULL');
+    }
+
     const whereClause = conditions.join(' AND ');
 
     const [countResult] = await conn2.query(
       `SELECT COUNT(DISTINCT p.CODIGO) as total
        FROM ${db_publico}.cad_prod p
-       INNER JOIN ${db_publico}.fotos_prod f ON f.PRODUTO = p.CODIGO
+       ${joinType} ${db_publico}.fotos_prod f ON f.PRODUTO = p.CODIGO
        WHERE ${whereClause}`,
       params
     );
@@ -74,7 +81,7 @@ router.get('/', async (req, res) => {
               COUNT(f.SEQ) as QTD_FOTOS,
               CAST(GROUP_CONCAT(f.FOTO ORDER BY f.SEQ ASC SEPARATOR '||') AS CHAR) as FOTOS
        FROM ${db_publico}.cad_prod p
-       LEFT JOIN ${db_publico}.fotos_prod f ON f.PRODUTO = p.CODIGO
+       ${joinType} ${db_publico}.fotos_prod f ON f.PRODUTO = p.CODIGO
        WHERE ${whereClause}
        GROUP BY p.CODIGO
        ORDER BY p.CODIGO
@@ -100,7 +107,7 @@ router.get('/', async (req, res) => {
     res.render('index', {
       dados,
       produtos: products as any[],
-      filters: { search, grupo, subgrupo },
+      filters: { search, grupo, subgrupo, foto_filtro },
       grupos: grupos as any[],
       subgrupos: subgrupos as any[],
       pagination: {
