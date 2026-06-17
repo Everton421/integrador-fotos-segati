@@ -37,6 +37,7 @@ router.get('/', async (req, res) => {
   const grupo = (req.query.grupo as string) || '';
   const subgrupo = (req.query.subgrupo as string) || '';
   const foto_filtro = (req.query.foto_filtro as string) || '';
+  const marca = (req.query.marca as string) || '';
   const page = Math.max(1, parseInt(req.query.page as string) || 1);
   const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 20));
   const offset = (page - 1) * limit;
@@ -56,6 +57,10 @@ router.get('/', async (req, res) => {
     if (subgrupo) {
       conditions.push('p.SUBGRUPO = ?');
       params.push(subgrupo);
+    }
+    if (marca) {
+      conditions.push('p.MARCA = ?');
+      params.push(marca);
     }
 
     const joinType = foto_filtro === 'com' ? 'INNER JOIN' : 'LEFT JOIN';
@@ -97,6 +102,10 @@ router.get('/', async (req, res) => {
       `SELECT CODIGO, DESCRICAO, COD_GRUPO FROM ${db_publico}.subgrupos ORDER BY DESCRICAO`
     );
 
+    const [marcas] = await conn2.query(
+      `SELECT CODIGO, DESCRICAO FROM ${db_publico}.cad_pmar ORDER BY DESCRICAO`
+    );
+
     const dados = {
       ultimo_envio_preco: null,
       ultimo_envio_estoque: null,
@@ -107,9 +116,10 @@ router.get('/', async (req, res) => {
     res.render('index', {
       dados,
       produtos: products as any[],
-      filters: { search, grupo, subgrupo, foto_filtro },
+      filters: { search, grupo, subgrupo, foto_filtro, marca },
       grupos: grupos as any[],
       subgrupos: subgrupos as any[],
+      marcas: marcas as any[],
       pagination: {
         page,
         limit,

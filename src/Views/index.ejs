@@ -76,6 +76,15 @@
                                         <% }); } %>
                                     </select>
                                 </div>
+                                <div class="col-md-2">
+                                    <label class="form-label small mb-1">Marca</label>
+                                    <select name="marca" class="form-select">
+                                        <option value="">Todas</option>
+                                        <% if (typeof marcas !== 'undefined') { marcas.forEach(m => { %>
+                                            <option value="<%= m.CODIGO %>" <%= filters.marca == m.CODIGO ? 'selected' : '' %>><%= m.DESCRICAO %></option>
+                                        <% }); } %>
+                                    </select>
+                                </div>
                                 <div class="col-md-1">
                                     <label class="form-label small mb-1">Fotos</label>
                                     <select name="foto_filtro" class="form-select">
@@ -155,7 +164,7 @@
                             <nav aria-label="Navegação do catálogo" class="mt-4">
                                 <ul class="pagination justify-content-center">
                                     <%
-                                        const extraParams = `&search=${encodeURIComponent(typeof filters !== 'undefined' ? filters.search : '')}&limit=${pagination.limit}&grupo=${typeof filters !== 'undefined' ? filters.grupo : ''}&subgrupo=${typeof filters !== 'undefined' ? filters.subgrupo : ''}&foto_filtro=${typeof filters !== 'undefined' ? filters.foto_filtro : ''}`;
+                                        const extraParams = `&search=${encodeURIComponent(typeof filters !== 'undefined' ? filters.search : '')}&limit=${pagination.limit}&grupo=${typeof filters !== 'undefined' ? filters.grupo : ''}&subgrupo=${typeof filters !== 'undefined' ? filters.subgrupo : ''}&foto_filtro=${typeof filters !== 'undefined' ? filters.foto_filtro : ''}&marca=${typeof filters !== 'undefined' ? filters.marca : ''}`;
                                         let startPage = Math.max(1, pagination.page - 2);
                                         let endPage = Math.min(pagination.totalPages, pagination.page + 2);
                                     %>
