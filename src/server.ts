@@ -2,7 +2,6 @@ import express, { type NextFunction,  type Request, type Response} from 'express
 import "express-async-errors";
 import cors from 'cors';
 import 'dotenv/config';
-import bodyParser from 'body-parser';
 import path from 'path'; 
 import { router } from './routes.ts';
 import { JobPhotos } from './job/photo-job.ts';
@@ -12,10 +11,8 @@ import { JobPhotos } from './job/photo-job.ts';
              app.use(express.json({ limit: '150mb' })); 
             app.use(express.urlencoded({ limit: '150mb', extended: true }));
 
-      //  app.set('view engine', 'ejs')
-      //  app.use(bodyParser.urlencoded({ extended: true }))
-      //  app.use(bodyParser.json())
-      //  app.set('views', path.join(__dirname, 'Views'));
+      app.set('view engine', 'ejs');
+      app.set('views', path.join(import.meta.dirname!, 'Views'));
         
         app.use(express.json());    
         app.use(router)

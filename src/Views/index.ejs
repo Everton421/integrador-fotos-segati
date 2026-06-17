@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Sincronização - INTERSIG</title>
+
+    <!-- Bootstrap CSS (v5.3.2) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+    <!-- Opcional: jQuery e Bootstrap Datepicker (descomente se precisar) -->
+    <!--
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    -->
+
+    <!-- Feather Icons -->
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"></script>
+
+    <!-- Estilos personalizados para o dashboard -->
+    <link href="/css/dashboard.css" rel="stylesheet"> <!- Ajuste o caminho se necessário ->
+
+    <style>
+        .produto-card { transition: transform .2s, box-shadow .2s; }
+        .produto-card:hover { transform: translateY(-4px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important; }
+        .produto-card .card-body { border-top: 1px solid rgba(0,0,0,.05); }
+    </style>
+
+  
+</head>
+
+<body>
+
+    <div class="container py-4">
+
+        <!-- CATÁLOGO DE PRODUTOS -->
+        <section>
+            <div class="d-flex justify-content-between flex-wrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h2>Catálogo de Produtos</h2>
+                <span class="text-muted small">
+                    Total: <strong><%= pagination.totalRegistros[0].total %></strong> produtos com foto
+                </span>
+            </div>
+
+            <!-- Filtros -->
+            <div class="card mb-4 bg-light border-light shadow-sm">
+                <div class="card-body py-2">
+                    <form action="/" method="GET" class="row g-2 align-items-end">
+                        <div class="col-md-4">
+                            <label class="form-label small mb-1">Busca</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white"><span data-feather="search"></span></span>
+                                <input type="text" name="search" class="form-control"
+                                       placeholder="Código ou descrição..."
+                                       value="<%= typeof filters !== 'undefined' ? filters.search : '' %>">
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small mb-1">Grupo</label>
+                            <select name="grupo" class="form-select">
+                                <option value="">Todos</option>
+                                <% if (typeof grupos !== 'undefined') { grupos.forEach(g => { %>
+                                    <option value="<%= g.CODIGO %>" <%= filters.grupo == g.CODIGO ? 'selected' : '' %>><%= g.NOME %></option>
+                                <% }); } %>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small mb-1">Subgrupo</label>
+                            <select name="subgrupo" class="form-select">
+                                <option value="">Todos</option>
+                                <% if (typeof subgrupos !== 'undefined') { subgrupos.forEach(sg => { %>
+                                    <option value="<%= sg.CODIGO %>" <%= filters.subgrupo == sg.CODIGO ? 'selected' : '' %>><%= sg.DESCRICAO %></option>
+                                <% }); } %>
+                            </select>
+                        </div>
+                        <div class="col-md-1">
+                            <label class="form-label small mb-1">Limite</label>
+                            <select name="limit" class="form-select">
+                                <option value="20" <%= pagination.limit === 20 ? 'selected' : '' %>>20</option>
+                                <option value="50" <%= pagination.limit === 50 ? 'selected' : '' %>>50</option>
+                                <option value="100" <%= pagination.limit === 100 ? 'selected' : '' %>>100</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <span data-feather="filter"></span> Filtrar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+                    <!-- Grid de Produtos -->
+                    <% if (typeof produtos !== 'undefined' && produtos.length > 0) { %>
+                        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3">
+                            <% produtos.forEach(function(prod) { %>
+                                <% const fotos = prod.FOTOS ? prod.FOTOS.split('||') : []; %>
+                                <div class="col">
+                                    <div class="card h-100 shadow-sm produto-card">
+                                        <div style="position:relative;background:#f8f9fa;">
+                                            <% if (fotos.length > 0) { %>
+                                                <div id="carousel-<%= prod.CODIGO %>" class="carousel slide carousel-dark" data-bs-ride="false">
+                                                    <div class="carousel-inner" style="height:200px;">
+                                                        <% fotos.forEach(function(foto, idx) { %>
+                                                            <div class="carousel-item <%= idx === 0 ? 'active' : '' %>" style="height:200px;">
+                                                                <div class="d-block h-100">
+                                                                    <img src="/foto/<%= foto %>" class="d-block w-100 h-100" alt="<%= prod.CODIGO %> - Foto <%= idx + 1 %>"
+                                                                         style="object-fit:cover;"
+                                                                         onerror="this.parentElement.innerHTML='<div class=\'d-flex align-items-center justify-content-center h-100\' style=\'background:#f8f9fa;\'><span style=\'color:#adb5bd;\'>Sem imagem</span></div>'">
+                                                                </div>
+                                                            </div>
+                                                        <% }); %>
+                                                    </div>
+                                                    <% if (fotos.length > 1) { %>
+                                                        <button class="carousel-control-prev" type="button" data-bs-target="#carousel-<%= prod.CODIGO %>" data-bs-slide="prev">
+                                                            <span class="carousel-control-prev-icon"></span>
+                                                        </button>
+                                                        <button class="carousel-control-next" type="button" data-bs-target="#carousel-<%= prod.CODIGO %>" data-bs-slide="next">
+                                                            <span class="carousel-control-next-icon"></span>
+                                                        </button>
+                                                        <div class="position-absolute bottom-0 start-50 translate-middle-x mb-1">
+                                                            <span class="badge bg-dark bg-opacity-50 small"><%= fotos.length %></span>
+                                                        </div>
+                                                    <% } %>
+                                                </div>
+                                            <% } else { %>
+                                                <div class="d-flex align-items-center justify-content-center" style="height:200px;background:#f8f9fa;">
+                                                    <span data-feather="image" style="width:48px;height:48px;color:#adb5bd;"></span>
+                                                </div>
+                                            <% } %>
+                                        </div>
+                                        <div class="card-body py-2 px-3">
+                                            <h6 class="card-title text-dark mb-0 fs-6">Cód: <%= prod.CODIGO %></h6>
+                                            <h6 class="card-title text-dark mb-0 fs-6">Ref: <%= prod.NUM_ORIGINAL %></h6>
+                                            <p class="card-text text-muted small mb-0 text-truncate"><%= prod.DESCR_CURTA_MKTPLACE || prod.DESCRICAO %></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+
+                        <!-- Paginação -->
+                        <% if (pagination.totalPages > 1) { %>
+                            <nav aria-label="Navegação do catálogo" class="mt-4">
+                                <ul class="pagination justify-content-center">
+                                    <%
+                                        const extraParams = `&search=${encodeURIComponent(typeof filters !== 'undefined' ? filters.search : '')}&limit=${pagination.limit}&grupo=${typeof filters !== 'undefined' ? filters.grupo : ''}&subgrupo=${typeof filters !== 'undefined' ? filters.subgrupo : ''}`;
+                                        let startPage = Math.max(1, pagination.page - 2);
+                                        let endPage = Math.min(pagination.totalPages, pagination.page + 2);
+                                    %>
+
+                                    <li class="page-item <%= pagination.page <= 1 ? 'disabled' : '' %>">
+                                        <a class="page-link" href="/?page=<%= pagination.page - 1 %><%= extraParams %>">&laquo;</a>
+                                    </li>
+
+                                    <% if (startPage > 1) { %>
+                                        <li class="page-item"><a class="page-link" href="/?page=1<%= extraParams %>">1</a></li>
+                                        <% if (startPage > 2) { %> <li class="page-item disabled"><span class="page-link">...</span></li> <% } %>
+                                    <% } %>
+
+                                    <% for(let i = startPage; i <= endPage; i++) { %>
+                                        <li class="page-item <%= pagination.page === i ? 'active' : '' %>">
+                                            <a class="page-link" href="/?page=<%= i %><%= extraParams %>"><%= i %></a>
+                                        </li>
+                                    <% } %>
+
+                                    <% if (endPage < pagination.totalPages) { %>
+                                        <% if (endPage < pagination.totalPages - 1) { %> <li class="page-item disabled"><span class="page-link">...</span></li> <% } %>
+                                        <li class="page-item"><a class="page-link" href="/?page=<%= pagination.totalPages %><%= extraParams %>"><%= pagination.totalPages %></a></li>
+                                    <% } %>
+
+                                    <li class="page-item <%= pagination.page >= pagination.totalPages ? 'disabled' : '' %>">
+                                        <a class="page-link" href="/?page=<%= pagination.page + 1 %><%= extraParams %>">&raquo;</a>
+                                    </li>
+                                </ul>
+                                <div class="text-center text-muted small mt-2">
+                                    Página <%= pagination.page %> de <%= pagination.totalPages %>
+                                </div>
+                            </nav>
+                        <% } %>
+
+                    <% } else { %>
+                        <div class="alert alert-warning" role="alert">
+                            <span data-feather="info"></span>
+                            Nenhum produto encontrado com os filtros selecionados.
+                        </div>
+                    <% } %>
+                </section>
+
+    </div>
+
+    <!-- Bootstrap Bundle JS (v5.3.2 - inclui Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+
+    <script>
+        feather.replace();
+    </script>
+</body>
+</html>

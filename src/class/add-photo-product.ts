@@ -35,7 +35,7 @@ export class AddPhotoProduct {
      for(const product  of products){
         console.log(`[V] Verificando produto ${product.CODIGO}.`);
           const photosFolder = datafolder.filter(( i )=>{ 
-                     if(i.startsWith(product.NUM_ORIGINAL)   ){
+                     if(i.startsWith(`${product.NUM_ORIGINAL}-`)   ){
                          return i;
                      };
                  })
