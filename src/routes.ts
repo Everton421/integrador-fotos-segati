@@ -50,11 +50,11 @@ router.get('/', async (req, res) => {
       params.push(`%${search}%`, `%${search}%`, `%${search}%`);
     }
     if (grupo) {
-      conditions.push('p.CODIGO_GRUPO = ?');
+      conditions.push('p.GRUPO = ?');
       params.push(grupo);
     }
     if (subgrupo) {
-      conditions.push('p.CODIGO_SUBGRUPO = ?');
+      conditions.push('p.SUBGRUPO = ?');
       params.push(subgrupo);
     }
 
