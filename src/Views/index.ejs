@@ -38,12 +38,6 @@
 
         <!-- CATÁLOGO DE PRODUTOS -->
         <section>
-            <div class="d-flex justify-content-between flex-wrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h2>Catálogo de Produtos</h2>
-                <span class="text-muted small">
-                    Total: <strong><%= pagination.totalRegistros[0].total %></strong> produto(s)
-                </span>
-            </div>
 
             <!-- Filtros -->
             <div class="card mb-4 bg-light border-light shadow-sm">
@@ -106,6 +100,9 @@
                                 <span data-feather="filter"></span> Filtrar
                             </button>
                         </div>
+                        <span class="text-muted small">
+                    Total: <strong><%= pagination.totalRegistros[0].total %></strong> produto(s)
+                </span>
                     </form>
                 </div>
             </div>
@@ -152,7 +149,7 @@
                                         <div class="card-body py-2 px-3">
                                             <h6 class="card-title text-dark mb-0 fs-6">Cód: <%= prod.CODIGO %></h6>
                                             <h6 class="card-title text-dark mb-0 fs-6">Ref: <%= prod.NUM_ORIGINAL %></h6>
-                                            <p class="card-text text-muted small mb-0 text-truncate"><%= prod.DESCR_CURTA_MKTPLACE || prod.DESCRICAO %></p>
+                                            <p style="font-size: 10px; font-weight: bold;" class="card-text  "><%= prod.DESCRICAO %></p>
                                         </div>
                                     </div>
                                 </div>

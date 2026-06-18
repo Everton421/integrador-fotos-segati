@@ -47,8 +47,16 @@ router.get('/', async (req, res) => {
     const params: any[] = [];
 
     if (search) {
-      conditions.push('(p.CODIGO LIKE ? OR p.DESCRICAO LIKE ? OR p.NUM_ORIGINAL LIKE ? )');
-      params.push(`%${search}%`, `%${search}%`, `%${search}%`);
+      const terms = search.trim().split(/\s+/).filter(t => t.length > 0);
+      if (terms.length > 0) {
+        const termConditions = terms.map(() =>
+          '(p.CODIGO LIKE ? OR p.DESCRICAO LIKE ? OR p.NUM_ORIGINAL LIKE ?)'
+        );
+        conditions.push(`(${termConditions.join(' AND ')})`);
+        terms.forEach(term => {
+          params.push(`%${term}%`, `%${term}%`, `%${term}%`);
+        });
+      }
     }
     if (grupo) {
       conditions.push('p.GRUPO = ?');

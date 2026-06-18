@@ -13,6 +13,8 @@ import { JobPhotos } from './job/photo-job.ts';
 
       app.set('view engine', 'ejs');
       app.set('views', path.join(import.meta.dirname!, 'Views'));
+        app.use(express.static(path.join(import.meta.dirname!,  'public')));
+
         
         app.use(express.json());    
         app.use(router)
