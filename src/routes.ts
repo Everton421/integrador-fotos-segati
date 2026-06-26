@@ -101,6 +101,16 @@ router.get('/', async (req, res) => {
        LIMIT ? OFFSET ?`,
       [...params, limit, offset]
     );
+    console.log(`SELECT p.CODIGO, p.DESCRICAO, p.DESCR_CURTA_MKTPLACE, p.NUM_ORIGINAL,
+              COUNT(f.SEQ) as QTD_FOTOS,
+              CAST(GROUP_CONCAT(f.FOTO ORDER BY f.SEQ ASC SEPARATOR '||') AS CHAR) as FOTOS
+       FROM ${db_publico}.cad_prod p
+       ${joinType} ${db_publico}.fotos_prod f ON f.PRODUTO = p.CODIGO
+       WHERE ${whereClause}
+       GROUP BY p.CODIGO
+       ORDER BY p.CODIGO
+       LIMIT ? OFFSET ?`)
+       console.log(params)
 
     const [grupos] = await conn2.query(
       `SELECT CODIGO, NOME FROM ${db_publico}.cad_pgru ORDER BY NOME`
