@@ -17,7 +17,6 @@ export class AddPhotoProduct {
      ATIVO = 'S'
       AND NUM_ORIGINAL <> ''
        AND NUM_ORIGINAL IS NOT NULL
-       AND CODIGO = 31537
        ;`
 
       const [ resultProducts ] = await conn2.query(SQL)  
